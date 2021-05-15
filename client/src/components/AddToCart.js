@@ -7,7 +7,7 @@ export default function AddToCart({ product }) {
 
   function handleAddItem() {
     addItem(product)
-    toast.success(`${product.name} is added to your cart`)
+    toast.success(`${product.name} is added to your cart!`)
   }
 
   return (
