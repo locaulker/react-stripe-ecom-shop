@@ -1,9 +1,28 @@
-// @ts-nocheck
 import React from "react"
+import axios from "axios"
 import { useParams } from "react-router-dom"
+import { useQuery } from "react-query"
+import LoadingSpinner from "../components/LoadingSpinner"
 
 export default function Product() {
   const { productId } = useParams()
+
+  const {
+    data: product,
+    isLoading,
+    isError,
+    error,
+  } = useQuery(["Product", productId], () =>
+    axios(`/api/products/${productId}`).then(res => res.data.product)
+  )
+
+  if (isLoading) return <LoadingSpinner />
+  if (isError)
+    return (
+      <div className="text-red-500 font-bold text-center mx-auto">
+        Oops! {error.message}
+      </div>
+    )
 
   return (
     <section className="text-gray-400 bg-gray-900 body-font overflow-hidden">
