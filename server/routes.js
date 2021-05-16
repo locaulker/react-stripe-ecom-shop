@@ -11,6 +11,7 @@ module.exports = function getRoutes() {
   router.get("/products/:productId", getProduct)
 
   router.post("/checkout-sessions", createCheckoutSession)
+  router.get("/check-sessions/:sessionId/", getCheckoutSession)
 
   return router
 }
@@ -35,6 +36,7 @@ function getProduct(req, res) {
   }
 }
 
+// createCheckoutSession handler
 const createCheckoutSession = async (req, res) => {
   try {
     const cartItems = req.body
@@ -61,6 +63,23 @@ const createCheckoutSession = async (req, res) => {
     const checkoutSession = await stripe.checkout.sessions.create(params)
 
     res.status(200).json(checkoutSession)
+  } catch (error) {
+    res.status(500).json({ statusCode: 500, message: error.message })
+  }
+}
+
+// getCheckoutSession handler
+const getCheckoutSession = async (req, res) => {
+  const { sessionId } = req.params
+  try {
+    if (!sessionId.startsWith("cs_")) {
+      throw Error("Incorrect Checkout Session ID")
+    }
+    const checkout_session = await stripe.checkout.sessions.retrieve(
+      sessionTd,
+      { expand: ["payment_intent"] }
+    )
+    res.status(200).json(checkout_session)
   } catch (error) {
     res.status(500).json({ statusCode: 500, message: error.message })
   }
